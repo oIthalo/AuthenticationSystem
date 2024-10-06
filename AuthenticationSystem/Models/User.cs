@@ -5,7 +5,7 @@ public class User
 {
     [Key]
     [Required]
-    public Guid Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     [Required(ErrorMessage = "Field is required")]
     [StringLength(16, ErrorMessage = "Username can't be longer than 16 characters")]
@@ -23,6 +23,9 @@ public class User
     [Required(ErrorMessage = "Field is required")]
     [Compare(nameof(Password), ErrorMessage = "Password missmatch")]
     public string RePassword { get; set; }
+
+    [Required(ErrorMessage = "Field is required")]
+    public Guid RoleId { get; set; }
 
     public Role Role { get; set; }
 }

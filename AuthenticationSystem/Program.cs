@@ -1,4 +1,6 @@
 using AuthenticationSystem.Data;
+using AuthenticationSystem.EndPoints;
+using AuthenticationSystem.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -7,7 +9,8 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen().AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddScoped<IUserService, UserService>();
 
 var connectionStr = builder.Configuration.GetConnectionString("AuthenticationConnection");
 builder.Services.AddDbContext<AppDbContext>(opts => opts
@@ -43,7 +46,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthentication();
-app.UseAuthorization();
+
+app.MapUserEndPoints();
 
 app.UseHttpsRedirection();
 app.Run();

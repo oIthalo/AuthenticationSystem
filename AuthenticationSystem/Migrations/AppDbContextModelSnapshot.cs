@@ -40,7 +40,7 @@ namespace AuthenticationSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("AuthenticationSystem.Models.User", b =>
@@ -74,7 +74,7 @@ namespace AuthenticationSystem.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("AuthenticationSystem.Models.User", b =>
