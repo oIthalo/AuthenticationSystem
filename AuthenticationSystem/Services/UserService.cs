@@ -1,6 +1,7 @@
 ﻿using AuthenticationSystem.Data;
 using AuthenticationSystem.Data.DataRequests;
 using AuthenticationSystem.Data.DataResponses;
+using AuthenticationSystem.Interfaces;
 using AuthenticationSystem.Models;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;

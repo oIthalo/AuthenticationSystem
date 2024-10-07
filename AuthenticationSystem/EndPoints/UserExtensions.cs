@@ -1,7 +1,7 @@
 ﻿using AuthenticationSystem.Data;
 using AuthenticationSystem.Data.DataRequests;
+using AuthenticationSystem.Interfaces;
 using AuthenticationSystem.Models;
-using AuthenticationSystem.Services;
 using Microsoft.EntityFrameworkCore;
 namespace AuthenticationSystem.EndPoints;
 

@@ -1,5 +1,6 @@
 using AuthenticationSystem.Data;
 using AuthenticationSystem.EndPoints;
+using AuthenticationSystem.Interfaces;
 using AuthenticationSystem.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;

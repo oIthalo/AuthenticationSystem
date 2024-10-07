@@ -1,6 +1,6 @@
 ﻿using AuthenticationSystem.Data.DataRequests;
 using AuthenticationSystem.Data.DataResponses;
-namespace AuthenticationSystem.Services;
+namespace AuthenticationSystem.Interfaces;
 
 public interface IUserService
 {
