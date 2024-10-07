@@ -18,12 +18,12 @@ public class UserService : IUserService
         _mapper = mapper;
     }
 
-    public async Task<UserResponse> Register(UserRequest model)
+    public async Task<UserResponse> Register(UserRequestRegister model)
     {
         User user = _mapper.Map<User>(model);
-        if (user is null) throw new Exception("Usuário inválido.");
+        if (user is null) throw new Exception("Usuário inválido");
 
-        var role = await _context.Roles.FirstOrDefaultAsync(x => x.Name == "admin");
+        var role = await _context.Roles.FirstOrDefaultAsync(x => x.Name == "User");
         if (role is null) throw new Exception("Role não encontrado");
 
         user.RoleId = role.Id;
@@ -35,4 +35,23 @@ public class UserService : IUserService
         userResponse.RoleName = role.Name;
         return userResponse;
     }
+
+    public async Task<UserResponseLogin> Login(UserRequestLogin model)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == model.Email && x.Password == model.Password);
+        if (user == null) throw new Exception("Usuário não encontrado");
+
+        var role = await _context.Roles.FirstOrDefaultAsync(x => x.Id == user.RoleId);
+        if (role == null) throw new Exception("Role não encontrado");
+        user.Role = role!;
+
+        var token = TokenService.GenerateToken(user);
+        return new UserResponseLogin
+        {
+            Username = user.Username,
+            Role = role.Name,
+            Token = token
+        };
+    }
+
 }

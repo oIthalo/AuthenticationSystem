@@ -4,5 +4,6 @@ namespace AuthenticationSystem.Services;
 
 public interface IUserService
 {
-    Task<UserResponse> Register(UserRequest model);
+    Task<UserResponse> Register(UserRequestRegister model);
+    Task<UserResponseLogin> Login(UserRequestLogin model);
 }

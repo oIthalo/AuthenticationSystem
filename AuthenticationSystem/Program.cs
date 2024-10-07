@@ -4,6 +4,7 @@ using AuthenticationSystem.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +36,19 @@ builder.Services.AddAuthentication(x =>
         ValidateIssuer = false,
         ValidateAudience = true,
     };
+});
+
+builder.Services
+    .AddAuthorization(opts =>
+    {
+        opts.AddPolicy("admin", policy => policy
+            .RequireAssertion(context =>
+            context.User.HasClaim(c => c.Type == ClaimTypes.Role &&
+            string.Equals(c.Value, "admin",
+            StringComparison.OrdinalIgnoreCase)
+            )
+        )
+    );
 });
 
 var app = builder.Build();

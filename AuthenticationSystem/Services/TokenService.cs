@@ -15,24 +15,21 @@ public static class TokenService
 
         var tokenHandler = new JwtSecurityTokenHandler();
         var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature);
+
+        var roleName = model.Role?.Name?.ToLower() ?? "defaultRole";
+
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = GenerateClaims(model),
+            Subject = new ClaimsIdentity(new Claim[]
+            {
+                new Claim(ClaimTypes.Name, model.Email),
+                new Claim(ClaimTypes.Role, roleName)
+            }),
             SigningCredentials = credentials,
             Expires = DateTime.UtcNow.AddHours(2),
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
-    }
-
-    public static ClaimsIdentity GenerateClaims(User model)
-    {
-        var ci = new ClaimsIdentity();
-
-        ci.AddClaim(new Claim(ClaimTypes.Name, model.Email));
-        ci.AddClaim(new Claim(ClaimTypes.Role, model.Role.ToString()!));
-
-        return ci;
     }
 }
