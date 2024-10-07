@@ -5,6 +5,9 @@ using AuthenticationSystem.Interfaces;
 using AuthenticationSystem.Models;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace AuthenticationSystem.Services;
 
@@ -33,7 +36,7 @@ public class UserService : IUserService
         await _context.SaveChangesAsync();
 
         var userResponse = _mapper.Map<UserResponse>(user);
-        userResponse.RoleName = role.Name;
+        userResponse.Role = role.Name;
         return userResponse;
     }
 
@@ -55,4 +58,36 @@ public class UserService : IUserService
         };
     }
 
+    public UserResponse GetUserByToken(string tokenJwt)
+    {
+        if (string.IsNullOrWhiteSpace(tokenJwt)) throw new ArgumentException("Token JWT não pode ser nulo ou vazio", nameof(tokenJwt));
+
+        var parts = tokenJwt.Split('.');
+        if (parts.Length != 3) throw new Exception("Token JWT inválido. O token deve conter três partes.");
+
+        var payload = parts[1];
+        if (payload == null) throw new Exception("Payload do token inválido");
+
+        // decodifica o payload de Base64Url
+        var decodedPayload = DecodeBase64Url(payload);
+
+        // converte o JSON recebido para um objeto C#
+        var userResponse = JsonSerializer.Deserialize<UserResponse>(decodedPayload);
+
+        return userResponse!;
+    }
+    
+    private string DecodeBase64Url(string base64Url)
+    {
+        string base64 = base64Url.Replace('-', '+').Replace('_', '/');
+
+        switch (base64.Length % 4)
+        {
+            case 2: base64 += "=="; break;
+            case 3: base64 += "="; break;
+        }
+
+        byte[] data = Convert.FromBase64String(base64);
+        return Encoding.UTF8.GetString(data);
+    }
 }

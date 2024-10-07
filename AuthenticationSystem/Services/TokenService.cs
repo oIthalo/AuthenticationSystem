@@ -24,7 +24,6 @@ public static class TokenService
             {
                 new Claim(ClaimTypes.NameIdentifier, model.Id.ToString()),
                 new Claim(ClaimTypes.Name, model.Username),
-                new Claim(ClaimTypes.Email, model.Email),
                 new Claim(ClaimTypes.Role, roleName),
             }),
             SigningCredentials = credentials,

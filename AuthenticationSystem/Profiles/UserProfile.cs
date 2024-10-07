@@ -10,7 +10,7 @@ public class UserProfile : Profile
     {
         CreateMap<UserRequestRegister, User>().ReverseMap();
         CreateMap<UserResponse, User>().ReverseMap()
-            .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.Role.Name)); ;
+            .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.Name)); ;
         CreateMap<UserRequestRegister, UserResponse>().ReverseMap();
     }
 }

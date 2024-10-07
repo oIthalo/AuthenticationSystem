@@ -11,6 +11,13 @@ public static class UserExtensions
     {
         var groupBuilder = app.MapGroup("auth").WithTags("Auth");
 
+        groupBuilder.MapGet("/user", (IUserService userService, string tokenJwt) =>
+        {
+            var token = userService.GetUserByToken(tokenJwt);
+            if (token == null) return Results.BadRequest("Erro ao obter informações pelo token");
+            return Results.Ok(token);
+        });
+
         groupBuilder.MapPost("/register", async (IUserService userService, UserRequestRegister model) =>
         {
             var userResponse = await userService.Register(model);
