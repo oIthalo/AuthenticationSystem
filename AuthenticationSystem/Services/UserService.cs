@@ -65,7 +65,7 @@ public class UserService : IUserService
         };
     }
 
-    public UserResponse GetUserByToken(string tokenJwt)
+    public async Task<UserResponse> GetUserByToken(string tokenJwt)
     {
         if (string.IsNullOrWhiteSpace(tokenJwt)) throw new ArgumentException("Token JWT não pode ser nulo ou vazio", nameof(tokenJwt));
 
@@ -107,6 +107,11 @@ public class UserService : IUserService
             Token = newJwtToken,
             RefreshToken = newRefreshToken,
         };
+    }
+
+    public void Logout(string username)
+    {
+        _tokenService.Logout(username);
     }
     
     private string DecodeBase64Url(string base64Url)

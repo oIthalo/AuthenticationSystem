@@ -7,6 +7,7 @@ public interface IUserService
 {
     Task<UserResponse> Register(UserRequestRegister model);
     Task<UserResponseLogin> Login(UserRequestLogin model);
-    UserResponse GetUserByToken(string tokenJwt);
+    Task<UserResponse> GetUserByToken(string tokenJwt);
     Task<UserResponseLogin> Refresh(string token, string refreshToken);
+    void Logout(string username);
 }

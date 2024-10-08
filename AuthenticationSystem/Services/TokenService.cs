@@ -108,4 +108,15 @@ public class TokenService : ITokenService
         _context.RefreshTokens.Remove(refreshToken!);
         _context.SaveChanges();
     }
+
+    public void Logout(string username)
+    {
+        var refreshToken = _context.RefreshTokens.Where(x => x.Username == username);
+        
+        if (refreshToken.Any())
+        {
+            _context.RefreshTokens.RemoveRange(refreshToken);
+            _context.SaveChanges();
+        }
+    }
 }

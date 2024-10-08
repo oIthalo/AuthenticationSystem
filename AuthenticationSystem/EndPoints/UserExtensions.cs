@@ -32,5 +32,11 @@ public static class UserExtensions
             var response = await userService.Refresh(token, refreshToken);
             return Results.Ok(response);
         });
+
+        groupBuilder.MapPost("/logout", async (IUserService userService, string username) =>
+        {
+            userService.Logout(username);
+            return Results.Ok();
+        });
     }
 }
