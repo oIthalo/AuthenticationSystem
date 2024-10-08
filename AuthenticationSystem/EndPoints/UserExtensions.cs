@@ -1,8 +1,6 @@
-﻿using AuthenticationSystem.Data;
-using AuthenticationSystem.Data.DataRequests;
+﻿using AuthenticationSystem.Data.DataRequests;
 using AuthenticationSystem.Interfaces;
-using AuthenticationSystem.Models;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 namespace AuthenticationSystem.EndPoints;
 
 public static class UserExtensions
@@ -14,22 +12,25 @@ public static class UserExtensions
         groupBuilder.MapGet("/user", (IUserService userService, string tokenJwt) =>
         {
             var token = userService.GetUserByToken(tokenJwt);
-            if (token == null) return Results.BadRequest("Erro ao obter informações pelo token");
             return Results.Ok(token);
         });
 
         groupBuilder.MapPost("/register", async (IUserService userService, UserRequestRegister model) =>
         {
-            var userResponse = await userService.Register(model);
-            if (userResponse == null) return Results.BadRequest("Erro ao registrar usuário");
-            return Results.Ok(userResponse);
+            var response = await userService.Register(model);
+            return Results.Ok(response);
         });
 
         groupBuilder.MapPost("/login", async (IUserService userService, UserRequestLogin model) =>
         {
-            var userResponse = await userService.Login(model);
-            if (userResponse == null) return Results.BadRequest("Erro ao logar usuário");
-            return Results.Ok(userResponse);
+            var response = await userService.Login(model);
+            return Results.Ok(response);
+        });
+
+        groupBuilder.MapPost("/refresh", async (IUserService userService, string token, string refreshToken) =>
+        {
+            var response = await userService.Refresh(token, refreshToken);
+            return Results.Ok(response);
         });
     }
 }

@@ -4,10 +4,12 @@ using AuthenticationSystem.Data.DataResponses;
 using AuthenticationSystem.Interfaces;
 using AuthenticationSystem.Models;
 using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace AuthenticationSystem.Services;
 
@@ -15,11 +17,13 @@ public class UserService : IUserService
 {
     private AppDbContext _context;
     private IMapper _mapper;
+    private ITokenService _tokenService;
 
-    public UserService(AppDbContext appDbContext, IMapper mapper)
+    public UserService(AppDbContext appDbContext, IMapper mapper, ITokenService tokenService)
     {
         _context = appDbContext;
         _mapper = mapper;
+        _tokenService = tokenService;
     }
 
     public async Task<UserResponse> Register(UserRequestRegister model)
@@ -49,12 +53,15 @@ public class UserService : IUserService
         if (role == null) throw new Exception("Role não encontrado");
         user.Role = role!;
 
-        var token = TokenService.GenerateToken(user);
+        var token = _tokenService.GenerateToken(user);
+        var refreshToken = _tokenService.GenerateRefreshToken();
+        _tokenService.SaveRefreshToken(user.Username, refreshToken);
         return new UserResponseLogin
         {
             Username = user.Username,
             Role = role.Name,
-            Token = token
+            Token = token,
+            RefreshToken = refreshToken
         };
     }
 
@@ -75,6 +82,31 @@ public class UserService : IUserService
         var userResponse = JsonSerializer.Deserialize<UserResponse>(decodedPayload);
 
         return userResponse!;
+    }
+
+    public async Task<UserResponseLogin> Refresh(string token, string refreshToken)
+    {
+        var principal = _tokenService.GetPrincipalFromExpiredToken(token);
+        var username = principal.Identity!.Name;
+        var savedRefreshToken = _tokenService.GetRefreshToken(username!);
+        if (savedRefreshToken != refreshToken)
+            throw new SecurityTokenException("Token inválido");
+
+        var newJwtToken = _tokenService.GenerateToken(principal.Claims);
+        var newRefreshToken = _tokenService.GenerateRefreshToken();
+        _tokenService.DeleteRefreshToken(username!, refreshToken);
+        _tokenService.SaveRefreshToken(username!, newRefreshToken);
+
+        var roleClaim = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+        var role = roleClaim?.Value ?? "User";
+
+        return new UserResponseLogin
+        {
+            Username = username!,
+            Role = role,
+            Token = newJwtToken,
+            RefreshToken = newRefreshToken,
+        };
     }
     
     private string DecodeBase64Url(string base64Url)
