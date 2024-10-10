@@ -15,13 +15,13 @@ public static class UserExtensions
             return Results.Ok(token);
         });
 
-        groupBuilder.MapPost("/register", async (IUserService userService, UserRequestRegister model) =>
+        groupBuilder.MapPost("/register", async (IUserService userService, [FromBody] UserRequestRegister model) =>
         {
             var response = await userService.Register(model);
             return Results.Ok(response);
         });
 
-        groupBuilder.MapPost("/login", async (IUserService userService, UserRequestLogin model) =>
+        groupBuilder.MapPost("/login", async (IUserService userService, [FromBody] UserRequestLogin model) =>
         {
             var response = await userService.Login(model);
             return Results.Ok(response);
@@ -33,9 +33,21 @@ public static class UserExtensions
             return Results.Ok(response);
         });
 
-        groupBuilder.MapPost("/logout", async (IUserService userService, string username) =>
+        groupBuilder.MapPost("/logout", (IUserService userService, [FromBody] string username) =>
         {
             userService.Logout(username);
+            return Results.Ok();
+        });
+
+        groupBuilder.MapPost("/forgot-password", async (IUserService userService, [FromBody] ForgotPasswordRequest request) =>
+        {
+            var response = await userService.ForgotPassword(request);
+            return Results.Ok(response);
+        });
+
+        groupBuilder.MapPost("/reset-password", async (IUserService userService, ResetPasswordRequest request) =>
+        {
+            await userService.ResetPassword(request);
             return Results.Ok();
         });
     }

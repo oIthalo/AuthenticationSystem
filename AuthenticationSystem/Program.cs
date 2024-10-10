@@ -41,8 +41,7 @@ builder.Services.AddAuthentication(x =>
     };
 });
 
-builder.Services
-    .AddAuthorization(opts =>
+builder.Services.AddAuthorization(opts =>
     {
         opts.AddPolicy("admin", policy => policy
             .RequireAssertion(context =>

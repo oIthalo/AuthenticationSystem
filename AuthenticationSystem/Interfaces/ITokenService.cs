@@ -1,4 +1,5 @@
-﻿using AuthenticationSystem.Models;
+﻿using AuthenticationSystem.Data.DataRequests;
+using AuthenticationSystem.Models;
 using System.Security.Claims;
 namespace AuthenticationSystem.Interfaces;
 

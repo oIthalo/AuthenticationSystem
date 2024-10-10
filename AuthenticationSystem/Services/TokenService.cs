@@ -1,10 +1,10 @@
 ﻿using AuthenticationSystem.Data;
+using AuthenticationSystem.Data.DataRequests;
 using AuthenticationSystem.Interfaces;
 using AuthenticationSystem.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;

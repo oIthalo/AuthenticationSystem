@@ -2,6 +2,6 @@
 
 public class RefreshTokenResponse
 {
-    public string Username { get; set; }
-    public string TokenRefresh { get; set; }
+    public string Username { get; set; } = string.Empty;
+    public string TokenRefresh { get; set; } = string.Empty;
 }

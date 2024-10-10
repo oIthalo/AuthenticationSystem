@@ -4,6 +4,7 @@ using AuthenticationSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AuthenticationSystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241009195530_tablePasswordResetTokens")]
+    partial class tablePasswordResetTokens
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,30 +42,6 @@ namespace AuthenticationSystem.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("RefreshTokens");
-                });
-
-            modelBuilder.Entity("AuthenticationSystem.Models.ResetPasswordToken", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime>("Expiration")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<bool>("IsUsed")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ResetPasswordTokens");
                 });
 
             modelBuilder.Entity("AuthenticationSystem.Models.Role", b =>
@@ -98,9 +77,11 @@ namespace AuthenticationSystem.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(16)
+                        .HasColumnType("varchar(16)");
 
                     b.Property<string>("PasswordResetToken")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("RePassword")

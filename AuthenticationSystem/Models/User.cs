@@ -16,7 +16,6 @@ public class User
     public string Email { get; set; }
 
     [Required(ErrorMessage = "Field is required")]
-    [StringLength(16, ErrorMessage = "Password can't be longer than 16 characters")]
     [DataType(DataType.Password)]
     public string Password { get; set; }
 
@@ -28,4 +27,6 @@ public class User
     public Guid RoleId { get; set; }
 
     public Role Role { get; set; }
+
+    public string? PasswordResetToken { get; set; }
 }

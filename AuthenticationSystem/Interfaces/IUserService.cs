@@ -1,6 +1,5 @@
 ﻿using AuthenticationSystem.Data.DataRequests;
 using AuthenticationSystem.Data.DataResponses;
-using Microsoft.AspNetCore.Mvc;
 namespace AuthenticationSystem.Interfaces;
 
 public interface IUserService
@@ -10,4 +9,6 @@ public interface IUserService
     Task<UserResponse> GetUserByToken(string tokenJwt);
     Task<UserResponseLogin> Refresh(string token, string refreshToken);
     void Logout(string username);
+    Task<string> ForgotPassword(ForgotPasswordRequest request);
+    Task ResetPassword(ResetPasswordRequest request);
 }
