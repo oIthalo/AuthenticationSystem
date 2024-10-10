@@ -13,7 +13,7 @@ public static class UserExtensions
         {
             var token = userService.GetUserByToken(tokenJwt);
             return Results.Ok(token);
-        });
+        }).RequireAuthorization("Admin");
 
         groupBuilder.MapPost("/register", async (IUserService userService, [FromBody] UserRequestRegister model) =>
         {
@@ -49,6 +49,6 @@ public static class UserExtensions
         {
             await userService.ResetPassword(request);
             return Results.Ok();
-        });
+        }).RequireAuthorization();
     }
 }

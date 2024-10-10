@@ -16,7 +16,6 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 var connectionStr = builder.Configuration.GetConnectionString("AuthenticationConnection");
-
 builder.Services.AddDbContext<AppDbContext>(opts => opts
     .UseMySql(connectionStr, ServerVersion
     .AutoDetect(connectionStr)));
