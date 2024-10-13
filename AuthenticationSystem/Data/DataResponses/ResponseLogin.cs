@@ -1,7 +1,7 @@
 ﻿using AuthenticationSystem.Models;
 namespace AuthenticationSystem.Data.DataResponses;
 
-public class UserResponseLogin
+public class ResponseLogin
 {
     public string Username { get; set; }
     public string Role { get; set; }

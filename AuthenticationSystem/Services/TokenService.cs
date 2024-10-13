@@ -109,9 +109,9 @@ public class TokenService : ITokenService
         _context.SaveChanges();
     }
 
-    public void Logout(string username)
+    public void Logout(string email)
     {
-        var refreshToken = _context.RefreshTokens.Where(x => x.Username == username);
+        var refreshToken = _context.RefreshTokens.Where(x => x.Email == email);
         
         if (refreshToken.Any())
         {

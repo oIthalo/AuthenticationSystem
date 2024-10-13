@@ -8,9 +8,9 @@ public class UserProfile : Profile
 {
     public UserProfile()
     {
-        CreateMap<UserRequestRegister, User>().ReverseMap();
-        CreateMap<UserResponse, User>().ReverseMap()
+        CreateMap<RequestRegister, User>().ReverseMap();
+        CreateMap<ResponseUser, User>().ReverseMap()
             .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.Name)); ;
-        CreateMap<UserRequestRegister, UserResponse>().ReverseMap();
+        CreateMap<RequestRegister, ResponseUser>().ReverseMap();
     }
 }

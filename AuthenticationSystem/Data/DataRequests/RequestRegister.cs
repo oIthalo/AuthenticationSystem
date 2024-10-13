@@ -1,6 +1,6 @@
 ﻿namespace AuthenticationSystem.Data.DataRequests;
 
-public class UserRequestRegister
+public class RequestRegister
 {
     public string Username { get; set; }
     public string Email { get; set; }

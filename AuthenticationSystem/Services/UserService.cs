@@ -3,6 +3,7 @@ using AuthenticationSystem.Data.DataRequests;
 using AuthenticationSystem.Data.DataResponses;
 using AuthenticationSystem.Interfaces;
 using AuthenticationSystem.Models;
+using AuthenticationSystem.ValueObjects;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -25,7 +26,7 @@ public class UserService : IUserService
         _tokenService = tokenService;
     }
 
-    public async Task<UserResponse> Register(UserRequestRegister model)
+    public async Task<ResponseUser> Register(RequestRegister model)
     {
         User user = _mapper.Map<User>(model);
         if (user is null) throw new ArgumentNullException(nameof(user), "Usuário inválido. Verifique os dados enviados.");
@@ -48,12 +49,12 @@ public class UserService : IUserService
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
 
-        var userResponse = _mapper.Map<UserResponse>(user);
+        var userResponse = _mapper.Map<ResponseUser>(user);
         userResponse.Role = role.Name;
         return userResponse;
     }
 
-    public async Task<UserResponseLogin> Login(UserRequestLogin model)
+    public async Task<ResponseLogin> Login(RequestLogin model)
     {
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == model.Email);
         if (user is null) throw new UnauthorizedAccessException("Usuário ou senha incorretos.");
@@ -70,7 +71,7 @@ public class UserService : IUserService
         var refreshToken = _tokenService.GenerateRefreshToken();
         _tokenService.SaveRefreshToken(user.Username, refreshToken);
 
-        return new UserResponseLogin
+        return new ResponseLogin
         {
             Username = user.Username,
             Role = role.Name,
@@ -79,24 +80,27 @@ public class UserService : IUserService
         };
     }
 
-    public async Task<UserResponse> GetUserByToken(string tokenJwt)
+    public async Task<ResponseUser> GetUserByToken(string tokenJwt)
     {
-        if (string.IsNullOrWhiteSpace(tokenJwt)) throw new ArgumentException("Token JWT não pode ser nulo ou vazio.", nameof(tokenJwt));
+        if (string.IsNullOrWhiteSpace(tokenJwt))
+            throw new ArgumentException("Token JWT não pode ser nulo ou vazio.", nameof(tokenJwt));
 
-        var parts = tokenJwt.Split('.');
-        if (parts.Length != 3) throw new SecurityTokenException("Token JWT inválido. O token deve conter três partes.");
+        var parts = tokenJwt.Split(".");
+        if (parts.Length != 3)
+            throw new SecurityTokenException("Token JWT inválido. O token deve conter três partes.");
 
         var payload = parts[1];
-        if (payload == null) throw new SecurityTokenException("Payload do token inválido.");
+        if (payload == null)
+            throw new SecurityTokenException("Payload do token inválido.");
 
         var decodedPayload = DecodeBase64Url(payload);
 
-        var userResponse = JsonSerializer.Deserialize<UserResponse>(decodedPayload);
+        var userResponse = JsonSerializer.Deserialize<ResponseUser>(decodedPayload);
 
         return userResponse ?? throw new InvalidOperationException("Erro ao desserializar o payload do token.");
     }
 
-    public async Task<UserResponseLogin> Refresh(string token, string refreshToken)
+    public async Task<ResponseLogin> Refresh(string token, string refreshToken)
     {
         var principal = _tokenService.GetPrincipalFromExpiredToken(token);
         var username = principal.Identity?.Name ?? throw new SecurityTokenException("Token inválido. Não foi possível extrair o nome de usuário.");
@@ -114,7 +118,7 @@ public class UserService : IUserService
         var roleClaim = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
         var role = roleClaim?.Value ?? "User";
 
-        return new UserResponseLogin
+        return new ResponseLogin
         {
             Username = username,
             Role = role,
@@ -123,12 +127,12 @@ public class UserService : IUserService
         };
     }
 
-    public void Logout(string username)
+    public void Logout(EmailVO email)
     {
-        _tokenService.Logout(username);
+        _tokenService.Logout(email.Email);
     }
 
-    public async Task<string> ForgotPassword(ForgotPasswordRequest request)
+    public async Task<string> ForgotPassword(RequestForgotPasssword request)
     {
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Email.Equals(request.Email));
         if (user is null) throw new UnauthorizedAccessException("Usuário não encontrado.");
@@ -149,7 +153,7 @@ public class UserService : IUserService
         return token;
     }
 
-    public async Task ResetPassword(ResetPasswordRequest request)
+    public async Task ResetPassword(RequestResetPassword request)
     {
         var resetToken = await _context.ResetPasswordTokens.FirstOrDefaultAsync(x => x.Token == request.Token && x.Expiration > DateTime.UtcNow && !x.IsUsed);
 

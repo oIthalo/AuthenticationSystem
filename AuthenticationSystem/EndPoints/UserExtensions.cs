@@ -1,5 +1,6 @@
 ﻿using AuthenticationSystem.Data.DataRequests;
 using AuthenticationSystem.Interfaces;
+using AuthenticationSystem.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
 namespace AuthenticationSystem.EndPoints;
 
@@ -9,43 +10,43 @@ public static class UserExtensions
     {
         var groupBuilder = app.MapGroup("auth").WithTags("Auth");
 
-        groupBuilder.MapGet("/user", (IUserService userService, string tokenJwt) =>
+        groupBuilder.MapPost("/user", (IUserService userService, [FromQuery] string tokenJwt) =>
         {
             var token = userService.GetUserByToken(tokenJwt);
             return Results.Ok(token);
-        }).RequireAuthorization("Admin");
+        });
 
-        groupBuilder.MapPost("/register", async (IUserService userService, [FromBody] UserRequestRegister model) =>
+        groupBuilder.MapPost("/register", async (IUserService userService, [FromBody] RequestRegister model) =>
         {
             var response = await userService.Register(model);
             return Results.Ok(response);
         });
 
-        groupBuilder.MapPost("/login", async (IUserService userService, [FromBody] UserRequestLogin model) =>
+        groupBuilder.MapPost("/login", async (IUserService userService, [FromBody] RequestLogin model) =>
         {
             var response = await userService.Login(model);
             return Results.Ok(response);
         });
 
-        groupBuilder.MapPost("/refresh", async (IUserService userService, string token, string refreshToken) =>
+        groupBuilder.MapPost("/refresh", async (IUserService userService, [FromBody] RequestRefresh request) =>
         {
-            var response = await userService.Refresh(token, refreshToken);
+            var response = await userService.Refresh(request.TokenJwt, request.RefreshToken);
             return Results.Ok(response);
         });
 
-        groupBuilder.MapPost("/logout", (IUserService userService, [FromBody] string username) =>
+        groupBuilder.MapPost("/logout", (IUserService userService, [FromBody] EmailVO email) =>
         {
-            userService.Logout(username);
+            userService.Logout(email);
             return Results.Ok();
         });
 
-        groupBuilder.MapPost("/forgot-password", async (IUserService userService, [FromBody] ForgotPasswordRequest request) =>
+        groupBuilder.MapPost("/forgot-password", async (IUserService userService, [FromBody] RequestForgotPasssword request) =>
         {
             var response = await userService.ForgotPassword(request);
             return Results.Ok(response);
         });
 
-        groupBuilder.MapPost("/reset-password", async (IUserService userService, ResetPasswordRequest request) =>
+        groupBuilder.MapPost("/reset-password", async (IUserService userService, [FromBody] RequestResetPassword request) =>
         {
             await userService.ResetPassword(request);
             return Results.Ok();
