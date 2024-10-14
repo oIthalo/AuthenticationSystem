@@ -33,9 +33,9 @@ public static class UserExtensions
             return Results.Ok(response);
         });
 
-        groupBuilder.MapPost("/user-logout", (IUserService userService, [FromBody] RequestLogin request) =>
+        groupBuilder.MapPost("/user-logout", (IUserService userService, [FromQuery] string refreshTokenJwt) =>
         {
-            userService.Logout(request);
+            userService.Logout(refreshTokenJwt);
             return Results.Ok();
         });
 
@@ -47,8 +47,8 @@ public static class UserExtensions
 
         groupBuilder.MapPost("/reset-password", async (IUserService userService, [FromBody] RequestResetPassword request) =>
         {
-            await userService.ResetPassword(request);
-            return Results.Ok();
+            var response = await userService.ResetPassword(request);
+            return Results.Ok(response);
         });
     }
 }

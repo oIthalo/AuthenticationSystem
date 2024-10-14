@@ -8,7 +8,7 @@ public interface IUserService
     Task<ResponseLogin> Login(RequestLogin model);
     Task<ResponseUser> GetUserByToken(string tokenJwt);
     Task<ResponseLogin> Refresh(string token, string refreshToken);
-    void Logout(RequestLogin request);
+    void Logout(string refreshTokenJwt);
     Task<string> ForgotPassword(RequestForgotPassword request);
-    Task ResetPassword(RequestResetPassword request);
+    Task<string> ResetPassword(RequestResetPassword request);
 }

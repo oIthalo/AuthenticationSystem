@@ -1,8 +1,6 @@
 ﻿using AuthenticationSystem.Data;
-using AuthenticationSystem.Data.DataRequests;
 using AuthenticationSystem.Interfaces;
 using AuthenticationSystem.Models;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -92,7 +90,7 @@ public class TokenService : ITokenService
     public void SaveRefreshToken(string username, string token)
     {
         var refreshToken = _context.RefreshTokens.FirstOrDefault(x => x.TokenRefresh == token);
-        _context.RefreshTokens.Add(new RefreshToken { Id = Guid.NewGuid(), Username = username, TokenRefresh = token});
+        _context.RefreshTokens.Add(new RefreshToken { Id = Guid.NewGuid(), Username = username, TokenRefresh = token });
         _context.SaveChanges();
     }
 
@@ -109,18 +107,19 @@ public class TokenService : ITokenService
         _context.SaveChanges();
     }
 
-    public void Logout(RequestLogin request)
+    public void Logout(string refreshTokenJwt)
     {
-        var user = _context.Users.FirstOrDefault(
-            x => x.Email == request.Email &&
-            x.Password == request.Password);
+        var refreshToken = _context.RefreshTokens
+            .Where(x => x.TokenRefresh == refreshTokenJwt);
 
-        var refreshToken = _context.RefreshTokens.Where(x => x.Username == user!.Username);
-        
-        if (refreshToken.Any())
+        if (refreshToken != null)
         {
             _context.RefreshTokens.RemoveRange(refreshToken);
             _context.SaveChanges();
+        }
+        else
+        {
+            throw new Exception("Refresh token inválido ou já revogado.");
         }
     }
 }

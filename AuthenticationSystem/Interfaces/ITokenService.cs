@@ -1,5 +1,4 @@
-﻿using AuthenticationSystem.Data.DataRequests;
-using AuthenticationSystem.Models;
+﻿using AuthenticationSystem.Models;
 using System.Security.Claims;
 namespace AuthenticationSystem.Interfaces;
 
@@ -12,5 +11,5 @@ public interface ITokenService
     void SaveRefreshToken(string username, string token);
     string GetRefreshToken(string username);
     void DeleteRefreshToken(string username, string token);
-    void Logout(RequestLogin request);
+    void Logout(string refreshTokenJwt);
 }

@@ -126,9 +126,9 @@ public class UserService : IUserService
         };
     }
 
-    public void Logout(RequestLogin request)
+    public void Logout(string refreshTokenJwt)
     {
-        _tokenService.Logout(request);
+        _tokenService.Logout(refreshTokenJwt);
     }
 
     public async Task<string> ForgotPassword(RequestForgotPassword request)
@@ -152,7 +152,7 @@ public class UserService : IUserService
         return token;
     }
 
-    public async Task ResetPassword(RequestResetPassword request)
+    public async Task<string> ResetPassword(RequestResetPassword request)
     {
         var resetToken = await _context.ResetPasswordTokens.FirstOrDefaultAsync(x => x.Token == request.Token && x.Expiration > DateTime.UtcNow && !x.IsUsed);
 
@@ -161,15 +161,15 @@ public class UserService : IUserService
         var user = await _context.Users.FindAsync(resetToken.UserId);
         if (user is null) throw new UnauthorizedAccessException("Usuário não encontrado");
 
-        user.Password = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
-        resetToken.IsUsed = true;
-
         if (resetToken.IsUsed)
         {
             _context.ResetPasswordTokens.Remove(resetToken);
             await _context.SaveChangesAsync();
             throw new InvalidOperationException("O token já foi utilizado.");
         }
+
+        user.Password = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+        resetToken.IsUsed = true;
 
         if (resetToken.Expiration <= DateTime.UtcNow)
         {
@@ -181,6 +181,7 @@ public class UserService : IUserService
         _context.ResetPasswordTokens.Update(resetToken);
         _context.Users.Update(user);
         await _context.SaveChangesAsync();
+        return "Senha alterada com sucesso";
     }
 
     private string DecodeBase64Url(string base64Url)
