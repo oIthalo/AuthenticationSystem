@@ -12,5 +12,5 @@ public interface ITokenService
     void SaveRefreshToken(string username, string token);
     string GetRefreshToken(string username);
     void DeleteRefreshToken(string username, string token);
-    void Logout(string username);
+    void Logout(RequestLogin request);
 }

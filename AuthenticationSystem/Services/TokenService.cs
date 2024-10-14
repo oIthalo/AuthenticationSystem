@@ -2,7 +2,7 @@
 using AuthenticationSystem.Data.DataRequests;
 using AuthenticationSystem.Interfaces;
 using AuthenticationSystem.Models;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -92,7 +92,7 @@ public class TokenService : ITokenService
     public void SaveRefreshToken(string username, string token)
     {
         var refreshToken = _context.RefreshTokens.FirstOrDefault(x => x.TokenRefresh == token);
-        _context.RefreshTokens.Add(new RefreshToken { Id = Guid.NewGuid(), Username = username, TokenRefresh = token });
+        _context.RefreshTokens.Add(new RefreshToken { Id = Guid.NewGuid(), Username = username, TokenRefresh = token});
         _context.SaveChanges();
     }
 
@@ -109,9 +109,13 @@ public class TokenService : ITokenService
         _context.SaveChanges();
     }
 
-    public void Logout(string email)
+    public void Logout(RequestLogin request)
     {
-        var refreshToken = _context.RefreshTokens.Where(x => x.Email == email);
+        var user = _context.Users.FirstOrDefault(
+            x => x.Email == request.Email &&
+            x.Password == request.Password);
+
+        var refreshToken = _context.RefreshTokens.Where(x => x.Username == user!.Username);
         
         if (refreshToken.Any())
         {

@@ -3,7 +3,6 @@ using AuthenticationSystem.Data.DataRequests;
 using AuthenticationSystem.Data.DataResponses;
 using AuthenticationSystem.Interfaces;
 using AuthenticationSystem.Models;
-using AuthenticationSystem.ValueObjects;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -57,7 +56,7 @@ public class UserService : IUserService
     public async Task<ResponseLogin> Login(RequestLogin model)
     {
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == model.Email);
-        if (user is null) throw new UnauthorizedAccessException("Usuário ou senha incorretos.");
+        if (user is null) throw new UnauthorizedAccessException("Email ou senha incorretos.");
 
         var role = await _context.Roles.FirstOrDefaultAsync(x => x.Id == user.RoleId);
         if (role is null) throw new InvalidOperationException("Role não encontrada.");
@@ -127,12 +126,12 @@ public class UserService : IUserService
         };
     }
 
-    public void Logout(EmailVO email)
+    public void Logout(RequestLogin request)
     {
-        _tokenService.Logout(email.Email);
+        _tokenService.Logout(request);
     }
 
-    public async Task<string> ForgotPassword(RequestForgotPasssword request)
+    public async Task<string> ForgotPassword(RequestForgotPassword request)
     {
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Email.Equals(request.Email));
         if (user is null) throw new UnauthorizedAccessException("Usuário não encontrado.");

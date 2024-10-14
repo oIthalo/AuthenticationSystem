@@ -1,7 +1,12 @@
-﻿namespace AuthenticationSystem.Data.DataRequests;
+﻿using System.ComponentModel.DataAnnotations;
+namespace AuthenticationSystem.Data.DataRequests;
 
 public class RequestLogin
 {
-    public string Email { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
+    [Required]
+    [DataType(DataType.EmailAddress)]
+    public string Email { get; set; }
+    [Required]
+    [DataType(DataType.Password)]
+    public string Password { get; set; }
 }

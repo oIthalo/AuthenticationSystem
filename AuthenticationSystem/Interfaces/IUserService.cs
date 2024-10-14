@@ -1,6 +1,5 @@
 ﻿using AuthenticationSystem.Data.DataRequests;
 using AuthenticationSystem.Data.DataResponses;
-using AuthenticationSystem.ValueObjects;
 namespace AuthenticationSystem.Interfaces;
 
 public interface IUserService
@@ -9,7 +8,7 @@ public interface IUserService
     Task<ResponseLogin> Login(RequestLogin model);
     Task<ResponseUser> GetUserByToken(string tokenJwt);
     Task<ResponseLogin> Refresh(string token, string refreshToken);
-    void Logout(EmailVO email);
-    Task<string> ForgotPassword(RequestForgotPasssword request);
+    void Logout(RequestLogin request);
+    Task<string> ForgotPassword(RequestForgotPassword request);
     Task ResetPassword(RequestResetPassword request);
 }
